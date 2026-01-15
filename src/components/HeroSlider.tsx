@@ -12,12 +12,13 @@ interface Movie {
   id: number
   title: string
   overview: string
-  backdrop_path: string
-  poster_path: string
+  backdrop_path: string | null
+  poster_path: string | null
   slug: string
   release_year: number
   vote_average: number
 }
+
 
 interface HeroSliderProps {
   slides: Movie[]
