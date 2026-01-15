@@ -42,10 +42,10 @@ export default function AdminLayout({
     return () => subscription.unsubscribe()
   }, [pathname, router])
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/admin/login')
-  }
+  // const handleLogout = async () => {
+  //   await supabase.auth.signOut()
+  //   router.push('/admin/login')
+  // }
 
   // Don't show layout on login page
   if (pathname === '/admin/login') {

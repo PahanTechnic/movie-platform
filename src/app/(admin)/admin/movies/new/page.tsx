@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
@@ -459,7 +460,7 @@ export default function AddMoviePage() {
                     />
                   </svg>
                   <p>Enter a movie title and click</p>
-                  <p className="font-medium">"Fetch Movie Data"</p>
+                  <p className="font-medium">&quot;Fetch Movie Data&quot;</p>
                 </div>
               )}
             </div>

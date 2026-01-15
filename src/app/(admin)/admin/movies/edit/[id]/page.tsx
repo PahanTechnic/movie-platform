@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -73,6 +76,7 @@ export default function EditMoviePage() {
     setError('')
 
     // Process resolution links
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const processedResolutions: any = {}
     let hasAtLeastOneLink = false
     

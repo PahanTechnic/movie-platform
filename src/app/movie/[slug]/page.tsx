@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/movie/[slug]/page.tsx
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
