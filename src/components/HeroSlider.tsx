@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 // components/HeroSlider.tsx
 'use client'
 
@@ -7,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { tmdbImage } from '@/lib/tmdb'
 import MovieImage from '@/components/MovieImage'
-
+import Image from 'next/image'
 interface Movie {
   id: number
   title: string
@@ -75,8 +74,8 @@ const handleNext = useCallback(() => {
                 index === currentSlide ? 'opacity-100' : 'opacity-0'
               }`}
             >
-              <img
-                src={tmdbImage(slide.backdrop_path, 'original')}
+              <Image
+                src={tmdbImage(slide.backdrop_path, 'original') || ''}
                 alt={slide.title}
                 className="w-full h-full object-cover"
               />
