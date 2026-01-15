@@ -2,7 +2,8 @@
 // components/HeroSlider.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+
 import Link from 'next/link'
 import { tmdbImage } from '@/lib/tmdb'
 import MovieImage from '@/components/MovieImage'
@@ -25,22 +26,23 @@ interface HeroSliderProps {
 export default function HeroSlider({ slides }: HeroSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
+  
+const handleNext = useCallback(() => {
+  if (isAnimating) return
+  setIsAnimating(true)
+  setCurrentSlide((prev) => (prev + 1) % slides.length)
+  setTimeout(() => setIsAnimating(false), 500)
+}, [isAnimating, slides.length])
 
-  // Auto-slide every 4 seconds
+
   useEffect(() => {
-    const timer = setInterval(() => {
-      handleNext()
-    }, 4000)
+  const timer = setInterval(() => {
+    handleNext()
+  }, 4000)
 
-    return () => clearInterval(timer)
-  }, [currentSlide])
+  return () => clearInterval(timer)
+}, [handleNext])
 
-  const handleNext = () => {
-    if (isAnimating) return
-    setIsAnimating(true)
-    setCurrentSlide((prev) => (prev + 1) % slides.length)
-    setTimeout(() => setIsAnimating(false), 500)
-  }
 
   const handlePrev = () => {
     if (isAnimating) return

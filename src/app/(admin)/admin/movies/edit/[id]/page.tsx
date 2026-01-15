@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 
 'use client'
@@ -64,7 +63,7 @@ export default function EditMoviePage() {
       }
     }
     fetchMovie()
-  }, [id])
+  }, [id, resolutionLinks])
 
   const handleUpdate = async () => {
     if (!title || !year || !contentCategory) {
@@ -116,6 +115,7 @@ export default function EditMoviePage() {
     }
 
     // Use the first available resolution as the default video_url
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const firstResolution = Object.values(processedResolutions)[0] as any
 
     const { error: updateError } = await supabase
