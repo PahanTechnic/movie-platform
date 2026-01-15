@@ -8,7 +8,9 @@ interface DownloadButtonProps {
   movieId: string
   resolution: string
   downloadUrl: string
+  fileSize?: string | number
 }
+
 
 export default function DownloadButton({ movieId, resolution, downloadUrl }: DownloadButtonProps) {
   const [isDownloading, setIsDownloading] = useState(false)
