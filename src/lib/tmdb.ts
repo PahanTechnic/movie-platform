@@ -5,7 +5,7 @@ const TMDB_API_BASE = 'https://api.themoviedb.org/3'
 
 export function tmdbImage(
   path?: string | null,
-  size: 'w185' | 'w500' | 'w780' | 'original' = 'w500'
+  size: 'w185' | 'w500' | 'w780' | 'w92' | 'original' = 'w500'
 ) {
   if (!path) return null
   return `${TMDB_IMAGE_BASE}/${size}${path}`

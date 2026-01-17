@@ -26,22 +26,22 @@ interface HeroSliderProps {
 export default function HeroSlider({ slides }: HeroSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-  
-const handleNext = useCallback(() => {
-  if (isAnimating) return
-  setIsAnimating(true)
-  setCurrentSlide((prev) => (prev + 1) % slides.length)
-  setTimeout(() => setIsAnimating(false), 500)
-}, [isAnimating, slides.length])
+
+  const handleNext = useCallback(() => {
+    if (isAnimating) return
+    setIsAnimating(true)
+    setCurrentSlide((prev) => (prev + 1) % slides.length)
+    setTimeout(() => setIsAnimating(false), 500)
+  }, [isAnimating, slides.length])
 
 
   useEffect(() => {
-  const timer = setInterval(() => {
-    handleNext()
-  }, 4000)
+    const timer = setInterval(() => {
+      handleNext()
+    }, 4000)
 
-  return () => clearInterval(timer)
-}, [handleNext])
+    return () => clearInterval(timer)
+  }, [handleNext])
 
 
   const handlePrev = () => {
@@ -70,18 +70,20 @@ const handleNext = useCallback(() => {
           {slides.map((slide, index) => (
             <div
               key={slide.id}
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                index === currentSlide ? 'opacity-100' : 'opacity-0'
-              }`}
+              className={`absolute inset-0 transition-opacity duration-500 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+                }`}
             >
               <Image
-                src={tmdbImage(slide.backdrop_path, 'original') || ''}
+                src={tmdbImage(slide.backdrop_path, 'original') ?? '/placeholder.jpg'}
                 alt={slide.title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                priority={index === currentSlide}
               />
+
             </div>
           ))}
-          
+
           <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/60 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0f172a] via-transparent to-transparent" />
         </div>
@@ -90,15 +92,14 @@ const handleNext = useCallback(() => {
         <div className="relative z-10 h-full max-w-7xl mx-auto px-6 flex items-center">
           <div className="flex flex-col md:flex-row items-center gap-8 w-full">
             {/* Movie Info */}
-            <div 
-              className={`flex-1 space-y-6 transition-all duration-500 ${
-                isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
-              }`}
+            <div
+              className={`flex-1 space-y-6 transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
+                }`}
             >
               <h1 className="text-5xl md:text-7xl font-bold leading-tight drop-shadow-lg">
                 {movie.title}
               </h1>
-              
+
               <p className="text-lg text-gray-200 max-w-2xl line-clamp-3 font-medium tracking-wide">
                 {movie.overview}
               </p>
@@ -137,10 +138,9 @@ const handleNext = useCallback(() => {
             </div>
 
             {/* Poster Image */}
-            <div 
-              className={`hidden md:block flex-shrink-0 transition-all duration-500 ${
-                isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-              }`}
+            <div
+              className={`hidden md:block flex-shrink-0 transition-all duration-500 ${isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+                }`}
             >
               <div className="relative w-80 h-[450px] rounded-xl overflow-hidden shadow-2xl">
                 <MovieImage
@@ -183,11 +183,10 @@ const handleNext = useCallback(() => {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`transition-all ${
-                index === currentSlide
+              className={`transition-all ${index === currentSlide
                   ? 'w-8 h-2 bg-white'
                   : 'w-2 h-2 bg-white/50 hover:bg-white/70'
-              } rounded-full`}
+                } rounded-full`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

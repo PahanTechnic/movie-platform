@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import './globals.css'
 
 export default function RootLayout({
@@ -8,14 +7,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-[#020617] text-white">
-        <nav className="border-b border-gray-800 p-4 flex gap-6">
-          <Link href="/" className="font-bold">
-            MovieSite
-          </Link>
-          <Link href="/search">Search 1</Link>
-        </nav>
-
+      <body className="">
         {children}
       </body>
     </html>

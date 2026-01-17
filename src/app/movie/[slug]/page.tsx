@@ -7,13 +7,13 @@ import MovieImage from '@/components/MovieImage'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 import DownloadButton from '@/components/DownloadButton'
-import { 
-  Play, 
-  Download, 
-  Star, 
-  Clock, 
-  Calendar, 
-  Globe, 
+import {
+  Play,
+  Download,
+  Star,
+  Clock,
+  Calendar,
+  Globe,
   Film,
   Tv,
   Sparkles,
@@ -25,14 +25,17 @@ import {
   Share2,
   Bookmark,
   Eye,
-  Info
+  Info,
+  Award
 } from 'lucide-react'
 
-export default async function MovieDetailPage({ params }: { params: { slug: string } }) {
+export default async function MovieDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params
+
   const { data: movie } = await supabase
     .from('movies')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', resolvedParams.slug)
     .single()
 
   if (!movie) {
@@ -47,7 +50,7 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
     .limit(10)
 
   const getCategoryIcon = (category: string) => {
-    switch(category) {
+    switch (category) {
       case 'MOVIE': return <Film className="w-4 h-4" />
       case 'TV_SERIES': return <Tv className="w-4 h-4" />
       case 'CARTOON': return <Sparkles className="w-4 h-4" />
@@ -57,7 +60,7 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
   }
 
   const getCategoryLabel = (category: string) => {
-    switch(category) {
+    switch (category) {
       case 'MOVIE': return 'Movie'
       case 'TV_SERIES': return 'TV Series'
       case 'CARTOON': return 'Cartoon'
@@ -70,143 +73,152 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
     <div className="min-h-screen bg-black text-white">
       <Navbar />
 
-      {/* Hero Section */}
-      <div className="relative min-h-[90vh] lg:min-h-[85vh]">
-        {/* Backdrop Image */}
-        {movie.backdrop_path && (
-          <div className="absolute inset-0">
+      {/* Hero Section with Visible Background */}
+      <div className="relative min-h-screen overflow-hidden">
+        {/* Background Image - More Visible */}
+        <div className="absolute inset-0">
+          {movie.backdrop_path && (
             <MovieImage
               src={tmdbImage(movie.backdrop_path, 'original')}
               alt={movie.title}
               fill
-              className="object-cover object-top opacity-30"
+              className="object-cover object-center"
               priority
+              sizes="100vw"
             />
-            {/* Dark Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-black/50" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent" />
-            
-            {/* Green Accent Glow */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-[150px]" />
-            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px]" />
-          </div>
-        )}
+          )}
+          
+          {/* Gradient Overlays for readability while keeping image visible */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
+          <div className="absolute inset-0 bg-black/30" />
+        </div>
 
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: `linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)`,
-          backgroundSize: '50px 50px'
-        }} />
+        {/* Animated Green Glow Effects */}
+        <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-emerald-500/20 rounded-full blur-[150px] animate-pulse" />
+        <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-green-500/15 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
 
         {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-            
-            {/* Poster Card */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
+
+            {/* Poster with Glass Effect */}
             <div className="flex-shrink-0 mx-auto lg:mx-0">
               <div className="relative group">
-                {/* Green Glow Effect */}
-                <div className="absolute -inset-1 bg-gradient-to-b from-green-500/50 to-emerald-600/50 rounded-2xl blur-xl opacity-0 group-hover:opacity-70 transition duration-700" />
-                <div className="absolute -inset-0.5 bg-gradient-to-b from-green-500/20 to-transparent rounded-2xl" />
+                {/* Glow Effect */}
+                <div className="absolute -inset-4 bg-gradient-to-tr from-emerald-500/40 via-green-400/30 to-emerald-600/40 rounded-3xl blur-2xl opacity-60 group-hover:opacity-100 transition-all duration-700" />
                 
-                <div className="relative w-64 sm:w-72 lg:w-80 aspect-[2/3] rounded-2xl overflow-hidden border border-green-500/20 shadow-2xl shadow-black">
+                {/* Glass Border */}
+                <div className="absolute -inset-1 bg-gradient-to-br from-emerald-400/50 via-green-500/30 to-emerald-600/50 rounded-2xl" />
+                
+                {/* Poster Container */}
+                <div className="relative w-72 sm:w-80 lg:w-96 aspect-[2/3] rounded-2xl overflow-hidden bg-black/50 backdrop-blur-sm">
                   <MovieImage
                     src={tmdbImage(movie.poster_path, 'w780')}
                     alt={movie.title}
                     fill
                     className="object-cover"
                     priority
+                    sizes="(max-width: 640px) 288px, (max-width: 1024px) 320px, 384px"
                   />
-                  
-                  {/* Dark Glass Overlay on Hover */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  {/* Rating Badge */}
+
+                  {/* Glass Overlay on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+
+                  {/* Rating Badge - Glass */}
                   {movie.vote_average && (
-                    <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 bg-black/70 backdrop-blur-md rounded-full border border-green-500/30">
-                      <Star className="w-4 h-4 text-green-400 fill-green-400" />
-                      <span className="font-bold text-green-400">{movie.vote_average.toFixed(1)}</span>
+                    <div className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-black/40 backdrop-blur-xl rounded-full border border-emerald-400/40 shadow-lg shadow-emerald-500/20">
+                      <Star className="w-5 h-5 text-emerald-400 fill-emerald-400" />
+                      <span className="font-bold text-white text-lg">{movie.vote_average.toFixed(1)}</span>
                     </div>
                   )}
 
-                  {/* Category Badge */}
-                  <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 bg-green-500/20 backdrop-blur-md rounded-full border border-green-500/30">
+                  {/* Category Badge - Glass */}
+                  <div className="absolute top-4 left-4 flex items-center gap-2 px-4 py-2 bg-emerald-500/20 backdrop-blur-xl rounded-full border border-emerald-400/30">
                     {getCategoryIcon(movie.content_category)}
-                    <span className="text-sm font-medium text-green-400">{getCategoryLabel(movie.content_category)}</span>
+                    <span className="text-sm font-bold text-emerald-300">{getCategoryLabel(movie.content_category)}</span>
                   </div>
 
                   {/* Play Button on Hover */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <div className="w-16 h-16 rounded-full bg-green-500/20 backdrop-blur-md flex items-center justify-center border border-green-500/50 transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                      <Play className="w-7 h-7 text-green-400 fill-green-400 ml-1" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="w-24 h-24 rounded-full bg-emerald-500/30 backdrop-blur-xl flex items-center justify-center border-2 border-emerald-400/60 shadow-2xl shadow-emerald-500/50 transform scale-75 group-hover:scale-100 transition-transform duration-500">
+                      <Play className="w-10 h-10 text-white fill-white ml-1" />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex justify-center gap-3 mt-6">
-                <button className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 hover:bg-green-500/20 backdrop-blur-sm border border-white/10 hover:border-green-500/50 transition-all duration-300 group">
-                  <Heart className="w-5 h-5 text-gray-400 group-hover:text-green-400 transition-colors" />
-                </button>
-                <button className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 hover:bg-green-500/20 backdrop-blur-sm border border-white/10 hover:border-green-500/50 transition-all duration-300 group">
-                  <Bookmark className="w-5 h-5 text-gray-400 group-hover:text-green-400 transition-colors" />
-                </button>
-                <button className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 hover:bg-green-500/20 backdrop-blur-sm border border-white/10 hover:border-green-500/50 transition-all duration-300 group">
-                  <Share2 className="w-5 h-5 text-gray-400 group-hover:text-green-400 transition-colors" />
-                </button>
+              {/* Action Buttons - Glass Pills */}
+              <div className="flex justify-center gap-4 mt-8">
+                {[
+                  { icon: Heart, label: 'Like' },
+                  { icon: Bookmark, label: 'Save' },
+                  { icon: Share2, label: 'Share' }
+                ].map((item, index) => (
+                  <button
+                    key={index}
+                    className="group flex items-center justify-center w-16 h-16 rounded-2xl bg-black/30 hover:bg-emerald-500/20 backdrop-blur-xl border border-emerald-500/30 hover:border-emerald-400/60 transition-all duration-300 shadow-lg hover:shadow-emerald-500/20"
+                  >
+                    <item.icon className="w-6 h-6 text-gray-400 group-hover:text-emerald-400 group-hover:scale-110 transition-all duration-300" />
+                  </button>
+                ))}
               </div>
             </div>
 
             {/* Movie Info */}
-            <div className="flex-1 text-center lg:text-left">
+            <div className="flex-1 text-center lg:text-left space-y-8">
               {/* Title */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 text-white leading-tight">
-                {movie.title}
-              </h1>
+              <div className="space-y-4">
+                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight">
+                  <span className="bg-gradient-to-r from-white via-emerald-100 to-green-200 bg-clip-text text-transparent drop-shadow-2xl">
+                    {movie.title}
+                  </span>
+                </h1>
+                
+                {/* Gradient Line */}
+                <div className="flex justify-center lg:justify-start">
+                  <div className="h-1.5 w-48 bg-gradient-to-r from-emerald-400 via-green-500 to-emerald-600 rounded-full shadow-lg shadow-emerald-500/50" />
+                </div>
+              </div>
 
-              {/* Subtitle/Tagline line */}
-              <div className="h-1 w-32 mx-auto lg:mx-0 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-6" />
-
-              {/* Meta Info Pills */}
-              <div className="flex flex-wrap justify-center lg:justify-start items-center gap-3 mb-6">
+              {/* Meta Pills - Glass */}
+              <div className="flex flex-wrap justify-center lg:justify-start items-center gap-3">
                 {movie.release_year && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10 hover:border-green-500/30 transition-colors">
-                    <Calendar className="w-4 h-4 text-green-400" />
-                    <span className="font-medium text-gray-300">{movie.release_year}</span>
+                  <div className="flex items-center gap-2.5 px-5 py-3 bg-black/30 backdrop-blur-xl rounded-full border border-emerald-500/30 hover:border-emerald-400/50 hover:bg-emerald-500/10 transition-all duration-300 shadow-lg">
+                    <Calendar className="w-5 h-5 text-emerald-400" />
+                    <span className="font-semibold text-white">{movie.release_year}</span>
                   </div>
                 )}
-                
+
                 {movie.runtime && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10 hover:border-green-500/30 transition-colors">
-                    <Clock className="w-4 h-4 text-green-400" />
-                    <span className="font-medium text-gray-300">{movie.runtime} min</span>
+                  <div className="flex items-center gap-2.5 px-5 py-3 bg-black/30 backdrop-blur-xl rounded-full border border-emerald-500/30 hover:border-emerald-400/50 hover:bg-emerald-500/10 transition-all duration-300 shadow-lg">
+                    <Clock className="w-5 h-5 text-emerald-400" />
+                    <span className="font-semibold text-white">{movie.runtime} min</span>
                   </div>
                 )}
 
                 {movie.original_language && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10 hover:border-green-500/30 transition-colors">
-                    <Globe className="w-4 h-4 text-green-400" />
-                    <span className="font-medium text-gray-300 uppercase">{movie.original_language}</span>
+                  <div className="flex items-center gap-2.5 px-5 py-3 bg-black/30 backdrop-blur-xl rounded-full border border-emerald-500/30 hover:border-emerald-400/50 hover:bg-emerald-500/10 transition-all duration-300 shadow-lg">
+                    <Globe className="w-5 h-5 text-emerald-400" />
+                    <span className="font-semibold text-white uppercase">{movie.original_language}</span>
                   </div>
                 )}
 
                 {movie.download_count > 0 && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 backdrop-blur-md rounded-full border border-green-500/30">
-                    <Download className="w-4 h-4 text-green-400" />
-                    <span className="font-medium text-green-400">{movie.download_count.toLocaleString()}</span>
+                  <div className="flex items-center gap-2.5 px-5 py-3 bg-emerald-500/20 backdrop-blur-xl rounded-full border border-emerald-400/50 shadow-lg shadow-emerald-500/20">
+                    <Download className="w-5 h-5 text-emerald-400" />
+                    <span className="font-bold text-emerald-300">{movie.download_count.toLocaleString()} downloads</span>
                   </div>
                 )}
               </div>
 
-              {/* Genres */}
+              {/* Genres - Glass Tags */}
               {movie.genres && movie.genres.length > 0 && (
-                <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-6">
-                  {movie.genres.map((genre: string) => (
+                <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+                  {movie.genres.map((genre: string, index: number) => (
                     <span
-                      key={genre}
-                      className="px-4 py-1.5 bg-green-500/10 rounded-full text-sm font-medium text-green-400 border border-green-500/20 hover:border-green-500/50 hover:bg-green-500/20 transition-all cursor-pointer"
+                      key={`${genre}-${index}`}
+                      className="px-5 py-2.5 bg-gradient-to-br from-emerald-500/15 to-green-600/10 backdrop-blur-xl rounded-full text-sm font-bold text-emerald-300 border border-emerald-400/30 hover:border-emerald-400/60 hover:bg-emerald-500/25 hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg"
                     >
                       {genre}
                     </span>
@@ -214,63 +226,59 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
                 </div>
               )}
 
-              {/* Overview */}
+              {/* Overview - Glass Card */}
               {movie.overview && (
-                <div className="mb-8">
-                  <p className="text-gray-400 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto lg:mx-0">
+                <div className="p-6 bg-black/30 backdrop-blur-xl rounded-2xl border border-emerald-500/20 shadow-xl">
+                  <p className="text-gray-300 text-lg leading-relaxed">
                     {movie.overview}
                   </p>
                 </div>
               )}
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-8">
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
                 {movie.preview_link && (
                   <a
                     href={movie.preview_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center justify-center gap-3 px-8 py-4 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/30 rounded-xl font-bold text-lg transition-all duration-300"
+                    className="group relative flex items-center justify-center gap-3 px-8 py-4 bg-black/40 backdrop-blur-xl border-2 border-emerald-500/40 hover:border-emerald-400/80 rounded-2xl font-bold text-lg transition-all duration-300 overflow-hidden shadow-xl hover:shadow-emerald-500/20"
                   >
-                    <Play className="w-6 h-6 text-white fill-white" />
-                    <span>Watch Trailer</span>
-                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                    <Play className="w-6 h-6 text-emerald-400 fill-emerald-400" />
+                    <span className="text-white">Watch Trailer</span>
+                    <ExternalLink className="w-5 h-5 text-emerald-400 opacity-60 group-hover:opacity-100" />
                   </a>
                 )}
 
                 <a
                   href="#downloads"
-                  className="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg shadow-green-500/20 hover:shadow-green-500/40"
+                  className="group relative flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-600 hover:from-emerald-500 hover:via-green-500 hover:to-emerald-500 rounded-2xl font-bold text-lg transition-all duration-300 shadow-2xl shadow-emerald-500/40 hover:shadow-emerald-500/60 hover:scale-105 overflow-hidden"
                 >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   <Download className="w-6 h-6" />
-                  Download Now
+                  <span>Download Now</span>
                 </a>
               </div>
 
-              {/* Quick Stats - Glass Cards */}
-              <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto lg:mx-0">
-                <div className="text-center p-4 bg-white/5 backdrop-blur-md rounded-xl border border-white/10 hover:border-green-500/30 transition-colors group">
-                  <div className="flex items-center justify-center gap-1 text-green-400 mb-1">
-                    <Star className="w-5 h-5 fill-green-400 group-hover:scale-110 transition-transform" />
-                    <span className="text-2xl font-bold">{movie.vote_average?.toFixed(1) || 'N/A'}</span>
-                  </div>
-                  <p className="text-xs text-gray-500">IMDB Rating</p>
+              {/* Stats Cards - Glass Grid */}
+              <div className="grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
+                <div className="group text-center p-6 bg-black/30 backdrop-blur-xl rounded-2xl border border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-500/10 transition-all duration-300 shadow-lg cursor-pointer">
+                  <Star className="w-8 h-8 text-emerald-400 fill-emerald-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <span className="text-3xl font-black text-emerald-400">{movie.vote_average?.toFixed(1) || 'N/A'}</span>
+                  <p className="text-xs font-semibold text-gray-500 mt-1 uppercase tracking-wider">Rating</p>
                 </div>
-                
-                <div className="text-center p-4 bg-white/5 backdrop-blur-md rounded-xl border border-white/10 hover:border-green-500/30 transition-colors group">
-                  <div className="flex items-center justify-center gap-1 text-green-400 mb-1">
-                    <Users className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    <span className="text-2xl font-bold">{movie.vote_count ? (movie.vote_count / 1000).toFixed(1) + 'K' : 'N/A'}</span>
-                  </div>
-                  <p className="text-xs text-gray-500">Votes</p>
+
+                <div className="group text-center p-6 bg-black/30 backdrop-blur-xl rounded-2xl border border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-500/10 transition-all duration-300 shadow-lg cursor-pointer">
+                  <Users className="w-8 h-8 text-emerald-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <span className="text-3xl font-black text-emerald-400">{movie.vote_count ? (movie.vote_count / 1000).toFixed(1) + 'K' : 'N/A'}</span>
+                  <p className="text-xs font-semibold text-gray-500 mt-1 uppercase tracking-wider">Votes</p>
                 </div>
-                
-                <div className="text-center p-4 bg-white/5 backdrop-blur-md rounded-xl border border-white/10 hover:border-green-500/30 transition-colors group">
-                  <div className="flex items-center justify-center gap-1 text-green-400 mb-1">
-                    <TrendingUp className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    <span className="text-2xl font-bold">{movie.popularity?.toFixed(0) || 'N/A'}</span>
-                  </div>
-                  <p className="text-xs text-gray-500">Popularity</p>
+
+                <div className="group text-center p-6 bg-black/30 backdrop-blur-xl rounded-2xl border border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-500/10 transition-all duration-300 shadow-lg cursor-pointer">
+                  <TrendingUp className="w-8 h-8 text-emerald-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <span className="text-3xl font-black text-emerald-400">{movie.popularity?.toFixed(0) || 'N/A'}</span>
+                  <p className="text-xs font-semibold text-gray-500 mt-1 uppercase tracking-wider">Popular</p>
                 </div>
               </div>
             </div>
@@ -279,28 +287,34 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-8 h-12 rounded-full border-2 border-green-500/30 flex items-start justify-center p-2">
-            <div className="w-1.5 h-3 bg-green-500/50 rounded-full animate-pulse" />
+          <div className="w-10 h-16 rounded-full border-2 border-emerald-400/50 bg-black/30 backdrop-blur-xl flex items-start justify-center p-3 shadow-lg shadow-emerald-500/20">
+            <div className="w-2 h-4 bg-gradient-to-b from-emerald-400 to-green-500 rounded-full animate-pulse" />
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-        
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-24">
+        {/* Background Glow for Content */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[150px]" />
+          <div className="absolute bottom-1/4 right-0 w-[400px] h-[400px] bg-green-500/10 rounded-full blur-[120px]" />
+        </div>
+
         {/* Video Player Section */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-1 h-8 bg-gradient-to-b from-green-400 to-emerald-600 rounded-full" />
-            <h2 className="text-3xl font-bold text-white">Watch Now</h2>
-            <Eye className="w-6 h-6 text-green-500 ml-2" />
+        <section className="relative space-y-8">
+          <div className="flex items-center gap-4">
+            <div className="w-1.5 h-12 bg-gradient-to-b from-emerald-400 to-green-600 rounded-full shadow-lg shadow-emerald-500/50" />
+            <h2 className="text-4xl font-black text-white">Watch Now</h2>
+            <Eye className="w-8 h-8 text-emerald-400 ml-2" />
           </div>
 
           <div className="relative group">
             {/* Glow Effect */}
-            <div className="absolute -inset-1 bg-green-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition duration-700" />
+            <div className="absolute -inset-3 bg-gradient-to-r from-emerald-500/30 via-green-500/30 to-emerald-600/30 rounded-3xl blur-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
             
-            <div className="relative bg-black/50 backdrop-blur-md rounded-2xl overflow-hidden border border-green-500/20 hover:border-green-500/40 transition-colors">
+            {/* Glass Container */}
+            <div className="relative bg-black/40 backdrop-blur-xl rounded-3xl overflow-hidden border-2 border-emerald-500/30 group-hover:border-emerald-400/60 transition-all duration-500 shadow-2xl shadow-emerald-500/10">
               <div className="aspect-video">
                 <iframe
                   src={movie.video_url}
@@ -314,30 +328,29 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
         </section>
 
         {/* Download & Details Grid */}
-        <section id="downloads" className="scroll-mt-8">
+        <section id="downloads" className="relative scroll-mt-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            {/* Download Section */}
-            <div className="relative group">
-              {/* Subtle Glow */}
-              <div className="absolute -inset-0.5 bg-gradient-to-b from-green-500/30 to-transparent rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition duration-500" />
-              
-              <div className="relative h-full bg-black/40 backdrop-blur-xl rounded-2xl p-6 border border-green-500/20 hover:border-green-500/40 transition-all duration-300">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-green-500/10 rounded-xl border border-green-500/20">
-                    <Download className="w-6 h-6 text-green-400" />
+
+            {/* Download Section - Glass Card */}
+            <div className="relative group h-full">
+              <div className="absolute -inset-2 bg-gradient-to-br from-emerald-500/20 via-green-500/20 to-emerald-600/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+
+              <div className="relative h-full bg-black/40 backdrop-blur-2xl rounded-3xl p-8 border-2 border-emerald-500/30 hover:border-emerald-400/60 transition-all duration-300 shadow-2xl">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="p-4 bg-gradient-to-br from-emerald-500/20 to-green-600/10 backdrop-blur-xl rounded-2xl border border-emerald-400/30 shadow-lg shadow-emerald-500/20">
+                    <Download className="w-8 h-8 text-emerald-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Download Files</h3>
-                    <p className="text-sm text-gray-500">Choose your preferred quality</p>
+                    <h3 className="text-2xl font-bold text-white">Download Files</h3>
+                    <p className="text-gray-400 mt-1">Choose your preferred quality</p>
                   </div>
                 </div>
 
                 {movie.resolution_links && Object.keys(movie.resolution_links).length > 0 ? (
-                  <div className="space-y-3">
-                    {Object.entries(movie.resolution_links).map(([resolution, data]: [string, any]) => (
+                  <div className="space-y-4">
+                    {Object.entries(movie.resolution_links).map(([resolution, data]: [string, any], index: number) => (
                       <DownloadButton
-                        key={resolution}
+                        key={`${resolution}-${index}`}
                         movieId={movie.id}
                         resolution={resolution}
                         downloadUrl={data.download_url}
@@ -352,85 +365,62 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
                     downloadUrl={movie.download_link}
                   />
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <Download className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p>No download links available</p>
+                  <div className="text-center py-16 text-gray-500">
+                    <Download className="w-20 h-20 mx-auto mb-4 opacity-20" />
+                    <p className="text-lg">No download links available</p>
                   </div>
                 )}
 
-                {/* Trailer Button */}
                 {movie.preview_link && (
                   <a
                     href={movie.preview_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full mt-4 px-6 py-4 bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/20 rounded-xl font-semibold transition-all duration-300"
+                    className="group/btn flex items-center justify-center gap-3 w-full mt-8 px-6 py-4 bg-black/40 hover:bg-emerald-500/15 backdrop-blur-xl border-2 border-emerald-500/30 hover:border-emerald-400/60 rounded-2xl font-bold transition-all duration-300 shadow-lg"
                   >
-                    <Play className="w-5 h-5 fill-white" />
-                    <span>Watch Trailer</span>
-                    <ExternalLink className="w-4 h-4 text-gray-400" />
+                    <Play className="w-6 h-6 text-emerald-400 fill-emerald-400" />
+                    <span className="text-white">Watch Trailer</span>
+                    <ExternalLink className="w-5 h-5 text-gray-400 group-hover/btn:text-emerald-400 transition-colors" />
                   </a>
                 )}
               </div>
             </div>
 
-            {/* Movie Details Card */}
-            <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-b from-green-500/20 to-transparent rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition duration-500" />
-              
-              <div className="relative h-full bg-black/40 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-green-500/30 transition-all duration-300">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                    <Info className="w-6 h-6 text-green-400" />
+            {/* Movie Details - Glass Card */}
+            <div className="relative group h-full">
+              <div className="absolute -inset-2 bg-gradient-to-br from-green-500/15 via-emerald-500/15 to-green-600/15 rounded-3xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+
+              <div className="relative h-full bg-black/40 backdrop-blur-2xl rounded-3xl p-8 border-2 border-emerald-500/30 hover:border-green-400/60 transition-all duration-300 shadow-2xl">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="p-4 bg-gradient-to-br from-green-500/20 to-emerald-600/10 backdrop-blur-xl rounded-2xl border border-green-400/30 shadow-lg shadow-green-500/20">
+                    <Info className="w-8 h-8 text-green-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Movie Details</h3>
-                    <p className="text-sm text-gray-500">Additional information</p>
+                    <h3 className="text-2xl font-bold text-white">Movie Details</h3>
+                    <p className="text-gray-400 mt-1">Additional information</p>
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  {movie.director && (
-                    <div className="flex items-center justify-between py-3 border-b border-white/5">
-                      <span className="text-gray-500">Director</span>
-                      <span className="font-medium text-white">{movie.director}</span>
+                  {[
+                    { label: 'Director', value: movie.director },
+                    { label: 'Countries', value: movie.countries?.join(', ') },
+                    { label: 'Language', value: movie.original_language?.toUpperCase() },
+                    { label: 'Subtitles By', value: movie.subtitle_by, highlight: true },
+                    { label: 'Quality', value: movie.webdl, badge: true },
+                    { label: 'Total Downloads', value: movie.download_count?.toLocaleString(), large: true }
+                  ].filter(item => item.value).map((item, index) => (
+                    <div key={index} className="flex items-center justify-between py-4 px-4 -mx-4 rounded-xl hover:bg-emerald-500/10 border-b border-emerald-500/10 last:border-0 transition-colors">
+                      <span className="text-gray-400 font-medium">{item.label}</span>
+                      {item.badge ? (
+                        <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-500/20 to-green-500/10 text-emerald-300 rounded-full text-sm font-bold border border-emerald-400/30">{item.value}</span>
+                      ) : item.large ? (
+                        <span className="font-black text-2xl text-emerald-400">{item.value}</span>
+                      ) : (
+                        <span className={`font-semibold ${item.highlight ? 'text-emerald-400' : 'text-white'}`}>{item.value}</span>
+                      )}
                     </div>
-                  )}
-
-                  {movie.countries && movie.countries.length > 0 && (
-                    <div className="flex items-center justify-between py-3 border-b border-white/5">
-                      <span className="text-gray-500">Countries</span>
-                      <span className="font-medium text-white">{movie.countries.join(', ')}</span>
-                    </div>
-                  )}
-
-                  {movie.original_language && (
-                    <div className="flex items-center justify-between py-3 border-b border-white/5">
-                      <span className="text-gray-500">Language</span>
-                      <span className="font-medium text-white uppercase">{movie.original_language}</span>
-                    </div>
-                  )}
-
-                  {movie.subtitle_by && (
-                    <div className="flex items-center justify-between py-3 border-b border-white/5">
-                      <span className="text-gray-500">Subtitles By</span>
-                      <span className="font-medium text-green-400">{movie.subtitle_by}</span>
-                    </div>
-                  )}
-
-                  {movie.webdl && (
-                    <div className="flex items-center justify-between py-3 border-b border-white/5">
-                      <span className="text-gray-500">Quality</span>
-                      <span className="px-3 py-1 bg-green-500/10 text-green-400 rounded-full text-sm font-medium border border-green-500/20">{movie.webdl}</span>
-                    </div>
-                  )}
-
-                  {movie.download_count > 0 && (
-                    <div className="flex items-center justify-between py-3">
-                      <span className="text-gray-500">Total Downloads</span>
-                      <span className="font-bold text-green-400">{movie.download_count.toLocaleString()}</span>
-                    </div>
-                  )}
+                  ))}
                 </div>
               </div>
             </div>
@@ -439,36 +429,37 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
 
         {/* Cast Section */}
         {movie.cast && movie.cast.length > 0 && (
-          <section>
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-1 h-8 bg-gradient-to-b from-green-400 to-emerald-600 rounded-full" />
-              <h2 className="text-3xl font-bold text-white">Cast</h2>
-              <Users className="w-6 h-6 text-green-500 ml-2" />
+          <section className="relative">
+            <div className="flex items-center gap-4 mb-12">
+              <div className="w-1.5 h-12 bg-gradient-to-b from-emerald-400 to-green-600 rounded-full shadow-lg shadow-emerald-500/50" />
+              <h2 className="text-4xl font-black text-white">Cast</h2>
+              <Users className="w-8 h-8 text-emerald-400 ml-2" />
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {movie.cast.slice(0, 12).map((actor: any) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {movie.cast.slice(0, 12).map((actor: any, index: number) => (
                 <div
-                  key={actor.id}
-                  className="group relative bg-black/40 backdrop-blur-md rounded-xl p-4 border border-white/5 hover:border-green-500/30 transition-all duration-300"
+                  key={`${actor.id}-${index}`}
+                  className="group relative bg-black/40 backdrop-blur-xl rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-400/50 hover:bg-emerald-500/10 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-2 cursor-pointer"
                 >
-                  <div className="relative w-20 h-20 rounded-full overflow-hidden mb-3 mx-auto border-2 border-transparent group-hover:border-green-500/50 transition-colors">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden mb-4 mx-auto border-3 border-emerald-500/30 group-hover:border-emerald-400/70 transition-all duration-300 shadow-lg shadow-emerald-500/20">
                     {actor.profile_path ? (
                       <MovieImage
                         src={tmdbImage(actor.profile_path, 'w185')}
                         alt={actor.name}
                         fill
-                        className="object-cover"
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        sizes="96px"
                       />
                     ) : (
-                      <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                        <Users className="w-8 h-8 text-gray-600" />
+                      <div className="w-full h-full bg-gradient-to-br from-emerald-900/50 to-black flex items-center justify-center">
+                        <Users className="w-10 h-10 text-emerald-500/50" />
                       </div>
                     )}
                   </div>
-                  <h4 className="font-semibold text-sm text-center text-white truncate">{actor.name}</h4>
+                  <h4 className="font-bold text-sm text-center text-white truncate">{actor.name}</h4>
                   {actor.character && (
-                    <p className="text-xs text-gray-500 text-center truncate mt-1">{actor.character}</p>
+                    <p className="text-xs text-emerald-400/70 text-center truncate mt-1">{actor.character}</p>
                   )}
                 </div>
               ))}
@@ -478,87 +469,87 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
 
         {/* Related Movies */}
         {relatedMovies && relatedMovies.length > 0 && (
-          <section>
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-8 bg-gradient-to-b from-green-400 to-emerald-600 rounded-full" />
-                <h2 className="text-3xl font-bold text-white">
+          <section className="relative">
+            <div className="flex items-center justify-between mb-12">
+              <div className="flex items-center gap-4">
+                <div className="w-1.5 h-12 bg-gradient-to-b from-emerald-400 to-green-600 rounded-full shadow-lg shadow-emerald-500/50" />
+                <h2 className="text-4xl font-black text-white">
                   More {getCategoryLabel(movie.content_category)}
                   {movie.content_category !== 'ANIME' && 's'}
                 </h2>
               </div>
-              
+
               <Link
                 href={
                   movie.content_category === 'MOVIE' ? '/movies' :
-                  movie.content_category === 'TV_SERIES' ? '/tv-series' :
-                  movie.content_category === 'CARTOON' ? '/cartoons' :
-                  movie.content_category === 'ANIME' ? '/anime' : '/movies'
+                    movie.content_category === 'TV_SERIES' ? '/tv-series' :
+                      movie.content_category === 'CARTOON' ? '/cartoons' :
+                        movie.content_category === 'ANIME' ? '/anime' : '/movies'
                 }
-                className="group flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 hover:bg-green-500/10 border border-white/10 hover:border-green-500/30 font-semibold transition-all"
+                className="group flex items-center gap-3 px-6 py-3 rounded-2xl bg-black/40 hover:bg-emerald-500/15 backdrop-blur-xl border-2 border-emerald-500/30 hover:border-emerald-400/60 font-bold transition-all duration-300 shadow-lg"
               >
-                <span className="text-gray-300 group-hover:text-green-400 transition-colors">View All</span>
-                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-green-400 group-hover:translate-x-1 transition-all" />
+                <span className="text-gray-300 group-hover:text-emerald-300 transition-colors">View All</span>
+                <ChevronRight className="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-              {relatedMovies.map((relatedMovie) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              {relatedMovies.map((relatedMovie, index: number) => (
                 <Link
-                  key={relatedMovie.id}
+                  key={`${relatedMovie.id}-${index}`}
                   href={`/movie/${relatedMovie.slug}`}
                   className="group"
                 >
-                  <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-black/50 border border-white/5 hover:border-green-500/30 transition-all duration-500">
-                    {/* Green Glow on hover */}
-                    <div className="absolute -inset-0.5 bg-green-500/30 rounded-xl opacity-0 group-hover:opacity-100 blur-lg transition duration-500 -z-10" />
-                    
+                  <div className="relative aspect-[2/3] rounded-2xl overflow-hidden bg-black/50 border-2 border-emerald-500/20 hover:border-emerald-400/60 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-emerald-500/30">
+                    {/* Glow */}
+                    <div className="absolute -inset-2 bg-gradient-to-br from-emerald-500/40 to-green-500/40 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10" />
+
                     <MovieImage
                       src={tmdbImage(relatedMovie.poster_path, 'w500')}
                       alt={relatedMovie.title}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                     />
-                    
-                    {/* Dark Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    {/* Rating Badge */}
+
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                    {/* Rating */}
                     {relatedMovie.vote_average && (
-                      <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-lg border border-green-500/30 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <Star className="w-3 h-3 text-green-400 fill-green-400" />
-                        <span className="text-xs font-bold text-green-400">{relatedMovie.vote_average.toFixed(1)}</span>
+                      <div className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 bg-black/60 backdrop-blur-xl rounded-full border border-emerald-400/40 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg">
+                        <Star className="w-4 h-4 text-emerald-400 fill-emerald-400" />
+                        <span className="text-sm font-bold text-white">{relatedMovie.vote_average.toFixed(1)}</span>
                       </div>
                     )}
-                    
-                    {/* Info on Hover */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <h3 className="font-bold text-sm text-white line-clamp-2 mb-1">
+
+                    {/* Info */}
+                    <div className="absolute bottom-0 left-0 right-0 p-5 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                      <h3 className="font-bold text-white line-clamp-2 mb-2">
                         {relatedMovie.title}
                       </h3>
-                      <span className="text-xs text-green-400">{relatedMovie.release_year}</span>
+                      <span className="text-sm text-emerald-400 font-semibold">{relatedMovie.release_year}</span>
                     </div>
 
                     {/* Play Button */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-14 h-14 rounded-full bg-green-500/20 backdrop-blur-sm flex items-center justify-center border border-green-500/50 transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                        <Play className="w-6 h-6 text-green-400 fill-green-400 ml-1" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
+                      <div className="w-16 h-16 rounded-full bg-emerald-500/30 backdrop-blur-xl flex items-center justify-center border-2 border-emerald-400/60 shadow-2xl shadow-emerald-500/50 transform scale-75 group-hover:scale-100 transition-transform duration-500">
+                        <Play className="w-7 h-7 text-white fill-white ml-0.5" />
                       </div>
                     </div>
                   </div>
 
                   {/* Mobile Title */}
-                  <div className="mt-3 lg:hidden">
-                    <h3 className="font-semibold text-sm text-white line-clamp-2">
+                  <div className="mt-4 lg:hidden">
+                    <h3 className="font-bold text-sm text-white line-clamp-2 mb-1">
                       {relatedMovie.title}
                     </h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-500">{relatedMovie.release_year}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-gray-400">{relatedMovie.release_year}</span>
                       {relatedMovie.vote_average && (
                         <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 text-green-400 fill-green-400" />
-                          <span className="text-xs text-green-400">{relatedMovie.vote_average.toFixed(1)}</span>
+                          <Star className="w-3 h-3 text-emerald-400 fill-emerald-400" />
+                          <span className="text-xs text-emerald-400 font-semibold">{relatedMovie.vote_average.toFixed(1)}</span>
                         </div>
                       )}
                     </div>
@@ -570,8 +561,8 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
         )}
       </main>
 
-      {/* Footer Spacing */}
-      <div className="h-20" />
+      {/* Footer Gradient */}
+      <div className="h-32 bg-gradient-to-t from-emerald-950/20 to-transparent" />
     </div>
   )
 }
