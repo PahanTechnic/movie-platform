@@ -1,27 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
 export default function AdminLoginPage() {
-  const router = useRouter()
-
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  // ✅ If already logged in → go to dashboard
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        router.replace('/admin/dashboard')
-        router.refresh()
-      }
-    })
-  }, [router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,9 +25,12 @@ export default function AdminLoginPage() {
       return
     }
 
-    // ✅ VERY IMPORTANT: sync cookie with middleware
-    router.replace('/admin/dashboard')
-    router.refresh()
+    /**
+     * ✅ VERY IMPORTANT
+     * Force full page reload so middleware can read the cookie
+     * This FIXES Vercel production issue
+     */
+    window.location.href = '/admin/dashboard'
   }
 
   return (
