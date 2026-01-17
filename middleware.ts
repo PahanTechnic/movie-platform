@@ -4,6 +4,12 @@ import { createServerClient } from '@supabase/auth-helpers-nextjs'
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
+  const { pathname } = req.nextUrl
+
+  // ✅ Allow admin login page (VERY IMPORTANT)
+  if (pathname === '/admin/login') {
+    return res
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,8 +33,8 @@ export async function middleware(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // 🔐 Protect admin routes
-  if (!user && req.nextUrl.pathname.startsWith('/admin')) {
+  // 🔐 Protect admin routes (EXCEPT login)
+  if (!user && pathname.startsWith('/admin')) {
     return NextResponse.redirect(new URL('/admin/login', req.url))
   }
 
