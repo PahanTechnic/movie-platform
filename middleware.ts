@@ -1,15 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// ==========================================
+// FILE 1: middleware.ts
+// ==========================================
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
   const { pathname } = req.nextUrl
 
-  // ✅ Allow login page - return immediately
+  // ✅ COMPLETELY SKIP middleware for login page
   if (pathname === '/admin/login') {
-    return res
+    return NextResponse.next()
   }
+
+  // Only run auth check for OTHER admin routes
+  // eslint-disable-next-line prefer-const
+  let res = NextResponse.next({
+    request: {
+      headers: req.headers,
+    },
+  })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -33,15 +43,15 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
-  // 🔐 Protect admin routes
-  if (!session && pathname.startsWith('/admin')) {
+  // 🔐 If no session, redirect to login
+  if (!session) {
     return NextResponse.redirect(new URL('/admin/login', req.url))
   }
 
   return res
 }
 
-// ✅ IMPORTANT: Specify which routes to protect
+// ✅ Only match /admin routes EXCEPT /admin/login
 export const config = {
-  matcher: ['/admin/:path*']
+  matcher: ['/admin/dashboard/:path*', '/admin/movies/:path*']
 }
