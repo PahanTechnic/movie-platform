@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// ==========================================
-// FILE 1: middleware.ts
-// ==========================================
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
@@ -51,7 +48,12 @@ export async function middleware(req: NextRequest) {
   return res
 }
 
-// ✅ Only match /admin routes EXCEPT /admin/login
+// ✅ FIXED: Match all /admin routes except /admin/login
 export const config = {
-  matcher: ['/admin/dashboard/:path*', '/admin/movies/:path*']
+  matcher: [
+    '/admin/dashboard',
+    '/admin/dashboard/:path*',
+    '/admin/movies',
+    '/admin/movies/:path*'
+  ]
 }

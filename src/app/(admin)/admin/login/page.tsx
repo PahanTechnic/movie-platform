@@ -1,9 +1,6 @@
-// ==========================================
-// FILE 2: app/admin/login/page.tsx
-// ==========================================
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
@@ -14,35 +11,33 @@ export default function AdminLoginPage() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  // ✅ Check if already logged in
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
-        router.push('/admin/dashboard')
-      }
-    }
-    checkSession()
-  }, [router])
+  // ❌ REMOVED useEffect - this was causing the redirect loop!
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const { error, data } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (error) {
-      setError(error.message)
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
+
+      if (data.session) {
+        // ✅ Force a full page reload to update auth state
+        window.location.href = '/admin/dashboard'
+      }
+    } catch (err) {
+      setError('An unexpected error occurred')
       setLoading(false)
-      return
     }
-
-    // ✅ Use Next.js router instead of window.location
-    router.push('/admin/dashboard')
   }
 
   return (
@@ -77,7 +72,7 @@ export default function AdminLoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 py-3 text-white rounded font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-blue-600 hover:bg-blue-700 py-3 text-white rounded font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
@@ -85,4 +80,3 @@ export default function AdminLoginPage() {
     </div>
   )
 }
-
