@@ -8,7 +8,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const cookieStore = nextCookies()
+  // ✅ Next.js 15 requires await
+  const cookieStore = await nextCookies()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,14 +39,23 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen flex bg-[#0f172a]">
-      <aside className="w-64 bg-[#020617] border-r border-gray-800 p-6">
-        <h1 className="text-2xl font-bold mb-8 text-white">Admin Panel</h1>
+      <aside className="w-64 bg-[#020617] border-r border-gray-800 p-6 relative">
+        <h1 className="text-2xl font-bold mb-8 text-white">
+          Admin Panel
+        </h1>
 
         <nav className="space-y-2">
-          <a href="/admin/dashboard" className="block px-4 py-2 bg-blue-600 text-white rounded">
+          <a
+            href="/admin/dashboard"
+            className="block px-4 py-2 bg-blue-600 text-white rounded"
+          >
             Dashboard
           </a>
-          <a href="/admin/movies" className="block px-4 py-2 text-gray-400 hover:bg-gray-800 rounded">
+
+          <a
+            href="/admin/movies"
+            className="block px-4 py-2 text-gray-400 hover:bg-gray-800 rounded"
+          >
             Movies
           </a>
         </nav>
@@ -55,7 +65,9 @@ export default async function AdminLayout({
         </div>
       </aside>
 
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto">
+        {children}
+      </main>
     </div>
   )
 }
