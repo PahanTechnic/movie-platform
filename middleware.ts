@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
@@ -5,7 +6,7 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const { pathname } = req.nextUrl
 
-  // ✅ Allow login page
+  // ✅ Allow login page - return immediately
   if (pathname === '/admin/login') {
     return res
   }
@@ -40,6 +41,7 @@ export async function middleware(req: NextRequest) {
   return res
 }
 
+// ✅ IMPORTANT: Specify which routes to protect
 export const config = {
-  matcher: [],
+  matcher: ['/admin/:path*']
 }
