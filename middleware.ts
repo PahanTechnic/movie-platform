@@ -5,13 +5,11 @@ import { createServerClient } from '@supabase/ssr'
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // ✅ COMPLETELY SKIP middleware for login page
+  // ✅ Skip middleware for login page completely
   if (pathname === '/admin/login') {
     return NextResponse.next()
   }
 
-  // Only run auth check for OTHER admin routes
-  // eslint-disable-next-line prefer-const
   let res = NextResponse.next({
     request: {
       headers: req.headers,
@@ -27,9 +25,21 @@ export async function middleware(req: NextRequest) {
           return req.cookies.get(name)?.value
         },
         set(name: string, value: string, options: any) {
+          req.cookies.set({ name, value, ...options })
+          res = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          })
           res.cookies.set({ name, value, ...options })
         },
         remove(name: string, options: any) {
+          req.cookies.set({ name, value: '', ...options })
+          res = NextResponse.next({
+            request: {
+              headers: req.headers,
+            },
+          })
           res.cookies.set({ name, value: '', ...options })
         },
       },
@@ -42,18 +52,18 @@ export async function middleware(req: NextRequest) {
 
   // 🔐 If no session, redirect to login
   if (!session) {
-    return NextResponse.redirect(new URL('/admin/login', req.url))
+    const loginUrl = new URL('/admin/login', req.url)
+    return NextResponse.redirect(loginUrl)
   }
 
   return res
 }
 
-// ✅ FIXED: Match all /admin routes except /admin/login
+// ✅ Match all /admin routes except /admin/login
 export const config = {
   matcher: [
-    '/admin/dashboard',
+    '/admin',
     '/admin/dashboard/:path*',
-    '/admin/movies',
-    '/admin/movies/:path*'
-  ]
+    '/admin/movies/:path*',
+  ],
 }
